@@ -1,0 +1,69 @@
+# Dependencies
+node_modules/
+client/node_modules/
+server/node_modules/
+.pnp
+.pnp.js
+
+# Build Outputs
+dist/
+dist-ssr/
+client/dist/
+build/
+*.tsbuildinfo
+
+# SQLite Database & Runtime Files (auto-seeded by server/db.js)
+server/queueless.db
+server/queueless.db-shm
+server/queueless.db-wal
+*.sqlite
+*.sqlite3
+*.db
+*.db-shm
+*.db-wal
+
+# Environment Variables & Secrets (Keep .env.example)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+server/.env
+server/.env.local
+server/.env.*
+client/.env
+client/.env.local
+client/.env.*
+!.env.example
+!server/.env.example
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Cache & Diagnostics
+.eslintcache
+.stylelintcache
+.oxlintcache
+.vite/
+client/.vite/
+.turbo
+.parcel-cache
+
+# Operating System & IDE Files
+.DS_Store
+Thumbs.db
+Desktop.ini
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

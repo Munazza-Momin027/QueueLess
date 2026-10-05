@@ -1,0 +1,17 @@
+{
+  "name": "queueless-workspace",
+  "version": "1.0.0",
+  "description": "QueueLess - Smart Queue & Appointment Management System",
+  "private": true,
+  "scripts": {
+    "client": "npm run dev --prefix client",
+    "server": "npm run dev --prefix server",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "build": "npm run build --prefix client",
+    "start": "node server/index.js",
+    "test": "node server/test_rbac_security.js && node server/test_e2e_full_flow.js"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.4"
+  }
+}
