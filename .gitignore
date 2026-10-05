@@ -36,6 +36,10 @@ client/.env.local
 client/.env.*
 !.env.example
 !server/.env.example
+!client/.env.example
+
+# Vercel Deployment Artifacts
+.vercel/
 
 # Logs
 logs/

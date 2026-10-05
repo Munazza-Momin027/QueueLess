@@ -1,6 +1,13 @@
 // API Service Client wrapper
 
-const BASE_URL = '/api';
+// Read API URL from Vite environment variable (e.g., VITE_API_URL=https://api.queueless.com)
+// In production on Vercel without a separate backend domain, defaults to relative '/api'
+const rawApiUrl = (import.meta.env.VITE_API_URL || '').trim().replace(/\/+$/, '');
+const BASE_URL = !rawApiUrl
+  ? '/api'
+  : rawApiUrl.endsWith('/api')
+    ? rawApiUrl
+    : `${rawApiUrl}/api`;
 
 function getAuthHeader(): Record<string, string> {
   const token = localStorage.getItem('queueless_token');

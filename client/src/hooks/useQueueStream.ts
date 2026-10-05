@@ -17,7 +17,14 @@ export function useQueueStream(onQueueUpdate?: StreamCallback, onUserAlert?: Str
 
     function connect() {
       try {
-        es = new EventSource('/api/queues/stream');
+        const rawApiUrl = (import.meta.env.VITE_API_URL || '').trim().replace(/\/+$/, '');
+        const baseApi = !rawApiUrl
+          ? '/api'
+          : rawApiUrl.endsWith('/api')
+            ? rawApiUrl
+            : `${rawApiUrl}/api`;
+        const streamUrl = `${baseApi}/queues/stream`;
+        es = new EventSource(streamUrl);
 
         es.addEventListener('queue_update', (e) => {
           try {

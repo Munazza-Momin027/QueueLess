@@ -1,7 +1,24 @@
 // test_rbac_security.js
 // Automated verification suite for Role-Based Access Control and Security Enforcement
 
-const API_BASE = 'http://localhost:5000/api';
+import app from './index.js';
+
+const API_BASE = process.env.TEST_API_URL || 'http://localhost:5000/api';
+
+let serverInstance = null;
+
+async function ensureServerRunning() {
+  if (process.env.TEST_API_URL) return;
+  try {
+    const res = await fetch('http://localhost:5000/api/health', { signal: AbortSignal.timeout(1000) });
+    if (res.ok) return;
+  } catch (e) {
+    // Server not running, launch ephemeral server
+  }
+  await new Promise((resolve) => {
+    serverInstance = app.listen(5000, () => resolve());
+  });
+}
 
 async function request(path, options = {}) {
   const url = `${API_BASE}${path}`;
@@ -233,7 +250,20 @@ async function runTests() {
   }
 }
 
-runTests().catch(err => {
+async function main() {
+  await ensureServerRunning();
+  try {
+    await runTests();
+  } finally {
+    if (serverInstance) {
+      serverInstance.close();
+    }
+  }
+  process.exit(0);
+}
+
+main().catch(err => {
   console.error('Test execution error:', err);
+  if (serverInstance) serverInstance.close();
   process.exit(1);
 });

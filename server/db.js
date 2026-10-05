@@ -1,17 +1,45 @@
 import { DatabaseSync } from 'node:sqlite';
 import path from 'node:path';
+import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import bcrypt from 'bcryptjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const DB_PATH = path.join(__dirname, 'queueless.db');
 
-export const db = new DatabaseSync(DB_PATH);
+// Detect Vercel serverless / AWS Lambda environment
+const isVercel = Boolean(
+  process.env.VERCEL ||
+  process.env.VERCEL_ENV ||
+  process.env.AWS_LAMBDA_FUNCTION_NAME ||
+  process.env.LAMBDA_TASK_ROOT
+);
 
-// Enable Foreign Keys and Write-Ahead Logging for concurrency
+// On Vercel, the application filesystem is read-only; use /tmp for SQLite
+const defaultDbPath = isVercel
+  ? path.join('/tmp', 'queueless.db')
+  : path.join(__dirname, 'queueless.db');
+
+let resolvedDbPath = process.env.DATABASE_PATH || process.env.DATABASE_URL || defaultDbPath;
+if (resolvedDbPath.startsWith('file:')) {
+  resolvedDbPath = resolvedDbPath.replace(/^file:\/\/?/, '');
+}
+
+// Ensure database directory exists before initializing SQLite
+const dbDir = path.dirname(resolvedDbPath);
+if (dbDir && !fs.existsSync(dbDir)) {
+  fs.mkdirSync(dbDir, { recursive: true });
+}
+
+export const db = new DatabaseSync(resolvedDbPath);
+
+// Enable Foreign Keys and appropriate journal mode for environment
 db.exec('PRAGMA foreign_keys = ON;');
-db.exec('PRAGMA journal_mode = WAL;');
+if (!isVercel) {
+  db.exec('PRAGMA journal_mode = WAL;');
+} else {
+  db.exec('PRAGMA journal_mode = DELETE;');
+}
 
 export function initDatabase() {
   db.exec('PRAGMA foreign_keys = OFF;');

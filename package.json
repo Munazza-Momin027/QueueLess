@@ -3,6 +3,14 @@
   "version": "1.0.0",
   "description": "QueueLess - Smart Queue & Appointment Management System",
   "private": true,
+  "type": "module",
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "engines": {
+    "node": "22.x"
+  },
   "scripts": {
     "client": "npm run dev --prefix client",
     "server": "npm run dev --prefix server",
@@ -10,6 +18,13 @@
     "build": "npm run build --prefix client",
     "start": "node server/index.js",
     "test": "node server/test_rbac_security.js && node server/test_e2e_full_flow.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2"
   },
   "devDependencies": {
     "concurrently": "^9.2.4"

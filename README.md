@@ -201,14 +201,26 @@ node server/test_e2e_full_flow.js
 
 ## 🚢 Production Deployment Notes
 
-### 1. Frontend Production Build
+### 1. Frontend & Full-Stack Deployment on Vercel
+QueueLess includes ready-to-deploy Vercel configuration (`vercel.json` and `api/index.js` serverless handler):
+
+1. **Push your code to GitHub / GitLab**.
+2. **Import the repository into Vercel**.
+3. **Environment Variables**:
+   - `JWT_SECRET`: Generate a secure secret string.
+   - `NODE_ENV`: `production`.
+4. Deploy! Vercel automatically builds the Vite client (`npm run build`) and routes `/api/*` to the serverless function.
+
+> **Note on Serverless SQLite**: For high-concurrency production deployments requiring permanent multi-region state, connect to an external SQL database or deploy the Express backend to a continuous container host (such as Render, Railway, Fly.io, or VPS) and point `VITE_API_URL` to it.
+
+### 2. Frontend Production Build (Self-Hosted)
 To create an optimized production bundle:
 ```bash
 npm run build
 ```
 Compiled static assets will be output to `client/dist/`.
 
-### 2. Reverse Proxy (Nginx) Configuration
+### 3. Reverse Proxy (Nginx) Configuration
 In production environments, serve the compiled `client/dist/` through Nginx or Caddy, proxying `/api` requests to the Node.js process:
 
 ```nginx
@@ -239,7 +251,7 @@ server {
 }
 ```
 
-### 3. Process Management (PM2)
+### 4. Process Management (PM2)
 Run the backend with PM2 for automatic restarts:
 ```bash
 npm install -g pm2

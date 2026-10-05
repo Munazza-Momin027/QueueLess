@@ -4,8 +4,9 @@ const clients = new Set();
 
 export function registerSSEClient(req, res) {
   res.setHeader('Content-Type', 'text/event-stream');
-  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Cache-Control', 'no-cache, no-transform');
   res.setHeader('Connection', 'keep-alive');
+  res.setHeader('X-Accel-Buffering', 'no');
   res.flushHeaders?.();
 
   const client = {
@@ -25,7 +26,7 @@ export function registerSSEClient(req, res) {
 }
 
 // Keep-alive heartbeat every 25 seconds to prevent browser timeouts
-setInterval(() => {
+const heartbeatTimer = setInterval(() => {
   for (const client of clients) {
     try {
       client.res.write(': heartbeat\n\n');
@@ -34,6 +35,10 @@ setInterval(() => {
     }
   }
 }, 25000);
+
+if (heartbeatTimer.unref) {
+  heartbeatTimer.unref();
+}
 
 export function broadcastQueueUpdate(payload) {
   const data = JSON.stringify(payload);
